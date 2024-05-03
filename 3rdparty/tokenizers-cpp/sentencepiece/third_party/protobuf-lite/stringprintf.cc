@@ -40,7 +40,7 @@
 #include <google/protobuf/stubs/common.h>
 #include <google/protobuf/stubs/logging.h>
 
-namespace google {
+namespace google2 {
 namespace protobuf {
 
 #ifdef _MSC_VER

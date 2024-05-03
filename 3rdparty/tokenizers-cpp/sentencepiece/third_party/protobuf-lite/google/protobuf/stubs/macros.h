@@ -33,7 +33,7 @@
 
 #include <google/protobuf/stubs/port.h>
 
-namespace google {
+namespace google2 {
 namespace protobuf {
 
 #undef GOOGLE_DISALLOW_EVIL_CONSTRUCTORS

@@ -42,7 +42,7 @@
 #include <google/protobuf/stubs/casts.h>
 #include <google/protobuf/stubs/stl_util.h>
 
-namespace google {
+namespace google2 {
 namespace protobuf {
 namespace io {
 
