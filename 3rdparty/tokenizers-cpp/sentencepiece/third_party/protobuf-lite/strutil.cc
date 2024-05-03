@@ -57,7 +57,7 @@
 #define snprintf _snprintf
 #endif
 
-namespace google {
+namespace google2 {
 namespace protobuf {
 
 // These are defined as macros on some platforms.  #undef them so that we can

@@ -34,7 +34,7 @@
 
 #include <google/protobuf/stubs/stringpiece.h>
 
-namespace google {
+namespace google2 {
 namespace protobuf {
 namespace internal {
 

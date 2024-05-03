@@ -77,7 +77,7 @@
 #endif
 
 
-namespace google {
+namespace google2 {
 namespace protobuf {
 
 // Defined in this file.

@@ -48,7 +48,7 @@
 
 #include <google/protobuf/port_def.inc>
 
-namespace google {
+namespace google2 {
 namespace protobuf {
 
 // Return a C++ string

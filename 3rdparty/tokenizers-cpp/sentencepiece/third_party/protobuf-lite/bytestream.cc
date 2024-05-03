@@ -35,7 +35,7 @@
 
 #include <google/protobuf/stubs/logging.h>
 
-namespace google {
+namespace google2 {
 namespace protobuf {
 namespace strings {
 

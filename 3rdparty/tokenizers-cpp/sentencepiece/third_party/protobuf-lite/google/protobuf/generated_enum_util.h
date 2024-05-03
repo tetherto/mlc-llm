@@ -42,7 +42,7 @@
 #error "You cannot SWIG proto headers"
 #endif
 
-namespace google {
+namespace google2 {
 namespace protobuf {
 
 // This type trait can be used to cause templates to only match proto2 enum
