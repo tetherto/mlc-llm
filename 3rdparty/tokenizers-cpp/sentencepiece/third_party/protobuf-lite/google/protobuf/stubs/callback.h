@@ -10,7 +10,7 @@
 // ===================================================================
 // emulates google3/base/callback.h
 
-namespace google {
+namespace google2 {
 namespace protobuf {
 
 // Abstract interface for a callback.  When calling an RPC, you must provide

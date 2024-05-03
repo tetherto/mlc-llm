@@ -57,7 +57,7 @@
 #error "You cannot SWIG proto headers"
 #endif
 
-namespace google {
+namespace google2 {
 namespace protobuf {
 namespace internal {
 class InternalMetadata;           // metadata_lite.h

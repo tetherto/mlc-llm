@@ -58,7 +58,7 @@
 #error "You cannot SWIG proto headers"
 #endif
 
-namespace google {
+namespace google2 {
 namespace protobuf {
 
 template <typename T>
@@ -333,7 +333,7 @@ class PROTOBUF_EXPORT MessageLite {
   // This function takes a string in the (non-human-readable) binary wire
   // format, matching the encoding output by MessageLite::SerializeToString().
   // If you'd like to convert a human-readable string into a protocol buffer
-  // object, see google::protobuf::TextFormat::ParseFromString().
+  // object, see google2::protobuf::TextFormat::ParseFromString().
   PROTOBUF_ATTRIBUTE_REINITIALIZES bool ParseFromString(ConstStringParam data);
   // Like ParseFromString(), but accepts messages that are missing
   // required fields.

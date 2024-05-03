@@ -39,7 +39,7 @@
 
 #include <google/protobuf/port_def.inc>
 
-namespace google {
+namespace google2 {
 namespace protobuf {
 
 class FieldDescriptor;
@@ -47,14 +47,14 @@ class Message;
 
 namespace internal {
 
-extern const char kAnyFullTypeName[];          // "google.protobuf.Any".
+extern const char kAnyFullTypeName[];          // "google2.protobuf.Any".
 extern const char kTypeGoogleApisComPrefix[];  // "type.googleapis.com/".
 extern const char kTypeGoogleProdComPrefix[];  // "type.googleprod.com/".
 
 std::string GetTypeUrl(StringPiece message_name,
                        StringPiece type_url_prefix);
 
-// Helper class used to implement google::protobuf::Any.
+// Helper class used to implement google2::protobuf::Any.
 class PROTOBUF_EXPORT AnyMetadata {
   typedef ArenaStringPtr UrlType;
   typedef ArenaStringPtr ValueType;
@@ -124,7 +124,7 @@ class PROTOBUF_EXPORT AnyMetadata {
 // in the type url separating the full type name.
 //
 // NOTE: this function is available publicly as:
-//   google::protobuf::Any()  // static method on the generated message type.
+//   google2::protobuf::Any()  // static method on the generated message type.
 bool ParseAnyTypeUrl(StringPiece type_url, std::string* full_type_name);
 
 // Get the proto type name and prefix from Any::type_url value. For example,
@@ -135,7 +135,7 @@ bool ParseAnyTypeUrl(StringPiece type_url, std::string* full_type_name);
 bool ParseAnyTypeUrl(StringPiece type_url, std::string* url_prefix,
                      std::string* full_type_name);
 
-// See if message is of type google.protobuf.Any, if so, return the descriptors
+// See if message is of type google2.protobuf.Any, if so, return the descriptors
 // for "type_url" and "value" fields.
 bool GetAnyFieldDescriptors(const Message& message,
                             const FieldDescriptor** type_url_field,
@@ -143,7 +143,7 @@ bool GetAnyFieldDescriptors(const Message& message,
 
 }  // namespace internal
 }  // namespace protobuf
-}  // namespace google
+}  // namespace google2
 
 #include <google/protobuf/port_undef.inc>
 
