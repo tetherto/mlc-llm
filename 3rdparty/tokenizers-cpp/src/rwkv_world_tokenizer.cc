@@ -3,30 +3,31 @@
  * \file rwkv_world_tokenizer.cpp
  * \brief Implementation of llm chat.
  */
-#include <tokenizers_cpp.h>
 #include "rwkv_world_tokenizer.h"
 
-#include <iostream>
+#include <tokenizers_cpp.h>
+
 #include <fstream>
-#include <string_view>
+#include <iostream>
 #include <msgpack.hpp>
+#include <string_view>
 
 namespace tokenizers {
 
-RWKVWorldToolTokenizer::RWKVWorldToolTokenizer(const std::string &path) {
+RWKVWorldToolTokenizer::RWKVWorldToolTokenizer(const std::string& path) {
   std::ifstream infile;
   infile.open(path, std::ios::binary | std::ios::in);
   infile.seekg(0, std::ios::end);
   int64_t length = infile.tellg();
   infile.seekg(0, std::ios::beg);
-  char *data = new char[length];
+  char* data = new char[length];
   infile.read(data, length);
   infile.close();
 
   auto unpacker = msgpack::unpack(data, length);
   auto obj = unpacker.get();
   _idx2word = obj.as<std::unordered_map<int, std::string>>();
-  for (auto &pair : _idx2word) {
+  for (auto& pair : _idx2word) {
     _word2idx[pair.second] = pair.first;
   }
 }
@@ -64,7 +65,7 @@ std::string RWKVWorldToolTokenizer::decode(int id) const {
   }
 }
 
-std::string RWKVWorldToolTokenizer::decode(const std::vector<int> &ids) const {
+std::string RWKVWorldToolTokenizer::decode(const std::vector<int>& ids) const {
   std::string str;
   for (auto id : ids) {
     str += decode(id);
@@ -72,17 +73,24 @@ std::string RWKVWorldToolTokenizer::decode(const std::vector<int> &ids) const {
   return str;
 }
 
-RWKVWorldToolTokenizer createRWKVWorldToolTokenizer(const std::string &path) {
-    return RWKVWorldToolTokenizer(path);
+RWKVWorldToolTokenizer createRWKVWorldToolTokenizer(const std::string& path) {
+  return RWKVWorldToolTokenizer(path);
 }
 
 class RWKVWorldTokenizer : public Tokenizer {
  public:
-  explicit RWKVWorldTokenizer(const std::string& model_blob) : rwkv_world_tokenizer_(model_blob) {
-  }
+  explicit RWKVWorldTokenizer(const std::string& model_blob) : rwkv_world_tokenizer_(model_blob) {}
 
   std::vector<int32_t> Encode(const std::string& text) final {
     return rwkv_world_tokenizer_.encode(text);
+  }
+
+  // dummy
+  std::vector<std::string> EncodeAsText(const std::string& text) override {
+    // Implementation of tokenization logic
+    std::vector<std::string> tokens;
+    // ... populate tokens ...
+    return tokens;
   }
 
   std::string Decode(const std::vector<int32_t>& ids) final {
@@ -98,4 +106,4 @@ std::unique_ptr<Tokenizer> Tokenizer::FromBlobRWKVWorld(const std::string& model
   return std::make_unique<RWKVWorldTokenizer>(model_blob);
 }
 
-} // namespace tokenizers
+}  // namespace tokenizers
