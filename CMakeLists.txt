@@ -17,17 +17,15 @@ else()
 endif()
 
 if(NOT CMAKE_BUILD_TYPE)
-  set(
-    CMAKE_BUILD_TYPE RelWithDebInfo CACHE STRING "Build type" FORCE
-  )
+  set(CMAKE_BUILD_TYPE RelWithDebInfo CACHE STRING "Build type" FORCE)
   message(STATUS "Setting default build type to " ${CMAKE_BUILD_TYPE})
 endif(NOT CMAKE_BUILD_TYPE)
 
 option(MLC_HIDE_PRIVATE_SYMBOLS "Hide private symbols" ON)
 
-if (MLC_LLM_INSTALL_STATIC_LIB)
-  set(BUILD_STATIC_RUNTIME ON)
-endif()
+# We care only about static libs
+set(MLC_LLM_INSTALL_STATIC_LIB ON)
+set(BUILD_STATIC_RUNTIME ON)
 
 set(MLC_VISIBILITY_FLAG "")
 if (MLC_HIDE_PRIVATE_SYMBOLS)
@@ -68,17 +66,13 @@ set(MLC_LLM_RUNTIME_LINKER_LIB "")
 set(TOKENZIER_CPP_PATH 3rdparty/tokenizers-cpp)
 add_subdirectory(${TOKENZIER_CPP_PATH} tokenizers EXCLUDE_FROM_ALL)
 
-
 tvm_file_glob(GLOB_RECURSE MLC_LLM_SRCS cpp/*.cc)
 add_library(mlc_llm_objs OBJECT ${MLC_LLM_SRCS})
 
-set(
-  MLC_LLM_INCLUDES
-  ${TVM_SOURCE_DIR}/include
-  ${TVM_SOURCE_DIR}/3rdparty/dlpack/include
-  ${TVM_SOURCE_DIR}/3rdparty/dmlc-core/include
-  ${TVM_SOURCE_DIR}/3rdparty/picojson
-)
+set(MLC_LLM_INCLUDES ${TVM_HOME}/include
+                     ${TVM_HOME}/3rdparty/dlpack/include
+                     ${TVM_HOME}/3rdparty/dmlc-core/include
+                     ${TVM_HOME}/3rdparty/picojson)
 
 set(MLC_LLM_COMPILE_DEFS ${MLC_LLM_COMPILE_DEFS} DMLC_USE_LOGGING_LIBRARY=<tvm/runtime/logging.h>)
 set(MLC_LLM_COMPILE_DEFS ${MLC_LLM_COMPILE_DEFS} __STDC_FORMAT_MACROS=1)
@@ -90,13 +84,9 @@ target_include_directories(mlc_llm_objs PRIVATE ${TOKENZIER_CPP_PATH}/include)
 target_compile_definitions(mlc_llm_objs PRIVATE -DMLC_LLM_EXPORTS)
 target_include_directories(mlc_llm_objs PRIVATE 3rdparty/stb)
 
-add_library(mlc_llm SHARED $<TARGET_OBJECTS:mlc_llm_objs>)
 add_library(mlc_llm_static STATIC $<TARGET_OBJECTS:mlc_llm_objs>)
 add_dependencies(mlc_llm_static tokenizers_cpp sentencepiece-static tokenizers_c tvm_runtime)
-set_target_properties(mlc_llm_static PROPERTIES OUTPUT_NAME mlc_llm)
-
-target_link_libraries(mlc_llm PUBLIC tvm_runtime)
-target_link_libraries(mlc_llm PRIVATE tokenizers_cpp)
+set_target_properties(mlc_llm_static PROPERTIES OUTPUT_NAME mlc_llm_static)
 
 find_library(
   FLASH_ATTN_LIBRARY flash_attn
@@ -123,7 +113,6 @@ if (BUILD_CPP_TEST)
   target_include_directories(mlc_llm_cpp_tests PRIVATE ${MLC_LLM_INCLUDES})
   target_include_directories(mlc_llm_cpp_tests PRIVATE ${PROJECT_SOURCE_DIR}/cpp)
   target_include_directories(mlc_llm_cpp_tests PRIVATE ${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
-  target_link_libraries(mlc_llm_cpp_tests PUBLIC mlc_llm gtest gtest_main)
 endif(BUILD_CPP_TEST)
 
 if (CMAKE_SYSTEM_NAME STREQUAL "Android")
@@ -131,47 +120,9 @@ if (CMAKE_SYSTEM_NAME STREQUAL "Android")
   target_link_libraries(tokenizers_cpp PRIVATE log)
 endif()
 
-add_library(mlc_llm_module SHARED $<TARGET_OBJECTS:mlc_llm_objs>)
-target_link_libraries(mlc_llm_module PUBLIC tvm)
-target_link_libraries(mlc_llm_module PRIVATE tokenizers_cpp)
-
-
-set_property(TARGET mlc_llm_module APPEND PROPERTY LINK_OPTIONS "${MLC_VISIBILITY_FLAG}")
-set_property(TARGET mlc_llm APPEND PROPERTY LINK_OPTIONS "${MLC_VISIBILITY_FLAG}")
-
 find_program(CARGO_EXECUTABLE cargo)
 
 if(NOT CARGO_EXECUTABLE)
-    message(FATAL_ERROR "Cargo is not found! Please install cargo.")
+  message(FATAL_ERROR "Cargo is not found! Please install cargo.")
 endif()
 
-# when this option is on,
-# we install all static lib deps into lib
-if (MLC_LLM_INSTALL_STATIC_LIB)
-  install(TARGETS
-    mlc_llm_static
-    tokenizers_cpp
-    sentencepiece-static
-    tvm_runtime
-    LIBRARY DESTINATION lib${LIB_SUFFIX}
-    )
-  # tokenizers need special handling as it builds from rust
-  if(MSVC)
-    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/tokenizers/libtokenizers_c.lib
-      DESTINATION lib${LIB_SUFFIX}
-      )
-  else()
-    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/tokenizers/libtokenizers_c.a
-      DESTINATION lib${LIB_SUFFIX}
-      )
-  endif()
-else()
-  install(TARGETS tvm_runtime mlc_llm mlc_llm_module
-    mlc_llm_static
-    tokenizers_cpp
-    sentencepiece-static
-    RUNTIME_DEPENDENCY_SET tokenizers_c
-    RUNTIME DESTINATION bin
-    LIBRARY DESTINATION lib${LIB_SUFFIX}
-  )
-endif()

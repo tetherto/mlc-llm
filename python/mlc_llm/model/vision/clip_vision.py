@@ -11,7 +11,6 @@ from tvm.relax.frontend import nn
 from tvm.relax.frontend.nn import Module, Tensor
 from tvm.relax.frontend.nn.modules import Conv2D
 from tvm.relax.frontend.nn.op import (
-    add,
     broadcast_to,
     concat,
     permute_dims,
@@ -46,6 +45,8 @@ class CLIPVisionConfig(ConfigBase):  # pylint: disable=too-many-instance-attribu
 
 
 # pylint: disable=invalid-name,missing-docstring
+
+
 class CLIPVisionEmbeddings(Module):  # pylint: disable=too-many-instance-attributes
     def __init__(self, config: CLIPVisionConfig):
         super().__init__()
@@ -85,7 +86,7 @@ class CLIPVisionEmbeddings(Module):  # pylint: disable=too-many-instance-attribu
             self.position_embedding(posi_ids),
             shape=(batch_size, self.num_positions, self.embed_dim),
         )
-        embeddings = add(embeddings, batch_position_embedding)
+        embeddings = embeddings + batch_position_embedding
         return embeddings
 
 

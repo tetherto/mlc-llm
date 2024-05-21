@@ -45,6 +45,14 @@ class HFTokenizer : public Tokenizer {
     return std::string(data, len);
   }
 
+  // dummy
+  std::vector<std::string> EncodeAsText(const std::string& text) override {
+    // Implementation of tokenization logic
+    std::vector<std::string> tokens;
+    // ... populate tokens ...
+    return tokens;
+  }
+
  private:
   // internal handle
   TokenizerHandle handle_{nullptr};

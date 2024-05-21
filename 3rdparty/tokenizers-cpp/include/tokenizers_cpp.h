@@ -30,6 +30,13 @@ class Tokenizer {
   virtual std::vector<int32_t> Encode(const std::string& text) = 0;
 
   /*!
+   * \brief Encode text into text.
+   * \param text The input text.
+   * \returns The encoded text.
+   */
+  virtual std::vector<std::string> EncodeAsText(const std::string& text) = 0;
+
+  /*!
    * \brief Decode token ids into text.
    * \param text The token ids.
    * \returns The decoded text.
