@@ -20,6 +20,11 @@ class SentencePieceTokenizer : public Tokenizer {
     sentence_piece_.Encode(text, &tokens).IgnoreError();
     return tokens;
   }
+  std::vector<std::string> EncodeAsText(const std::string& text) final {
+    std::vector<std::string> texts;
+    sentence_piece_.Encode(text, &texts).IgnoreError();
+    return texts;
+  }
 
   std::string Decode(const std::vector<int32_t>& ids) final {
     std::string text;
