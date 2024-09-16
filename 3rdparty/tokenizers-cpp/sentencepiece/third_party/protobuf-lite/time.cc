@@ -5,7 +5,7 @@
 #include <google/protobuf/stubs/stringprintf.h>
 #include <google/protobuf/stubs/strutil.h>
 
-namespace google2 {
+namespace google {
 namespace protobuf {
 namespace internal {
 

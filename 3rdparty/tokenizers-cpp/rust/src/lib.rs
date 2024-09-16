@@ -7,19 +7,25 @@ use tokenizers::tokenizer::Tokenizer;
 
 pub struct TokenizerWrapper {
     tokenizer: Tokenizer,
-    encode_ids: Vec<u32>,
     decode_str: String,
+    id_to_token_result: String,
 }
 
 pub type Vocab = HashMap<String, u32>;
 pub type Merges = Vec<(String, String)>;
 
+#[repr(C)]
+pub struct TokenizerEncodeResult {
+    token_ids: *mut u32,
+    len: usize,
+}
+
 impl TokenizerWrapper {
     pub fn from_str(json: &str) -> TokenizerWrapper {
         TokenizerWrapper {
             tokenizer: Tokenizer::from_str(json).unwrap().into(),
-            encode_ids: Vec::new(),
             decode_str: String::new(),
+            id_to_token_result: String::new(),
         }
     }
 
@@ -75,18 +81,22 @@ impl TokenizerWrapper {
             .with_decoder(byte_level);
         TokenizerWrapper {
             tokenizer: tokenizer,
-            encode_ids: Vec::new(),
             decode_str: String::new(),
+            id_to_token_result: String::new(),
         }
     }
 
-    pub fn encode(&mut self, text: &str, add_special_tokens: bool) {
-        self.encode_ids = Vec::from(
-            self.tokenizer
-                .encode(text, add_special_tokens)
-                .unwrap()
-                .get_ids(),
-        );
+    pub fn encode(&mut self, text: &str, add_special_tokens: bool) -> Vec<u32> {
+        let encoded = self.tokenizer.encode(text, add_special_tokens).unwrap();
+        return encoded.get_ids().to_vec();
+    }
+
+    pub fn encode_batch(&mut self, texts: Vec<&str>, add_special_tokens: bool) -> Vec<Vec<u32>> {
+        let results = self.tokenizer.encode_batch(texts, add_special_tokens).unwrap()
+            .into_iter()
+            .map(|encoded| encoded.get_ids().to_vec())
+            .collect::<Vec<Vec<u32>>>();
+        return results;
     }
 
     pub fn decode(&mut self, ids: &[u32], skip_special_tokens: bool) {
@@ -135,22 +145,53 @@ extern "C" fn tokenizers_encode(
     input_cstr: *const u8,
     len: usize,
     add_special_tokens: i32,
+    out_result: *mut TokenizerEncodeResult,
 ) {
     unsafe {
         let input_data = std::str::from_utf8(std::slice::from_raw_parts(input_cstr, len)).unwrap();
-        (*handle).encode(input_data, add_special_tokens != 0);
+        let encoded = (*handle).encode(input_data, add_special_tokens != 0);
+        let len = encoded.len();
+        *out_result = TokenizerEncodeResult {
+            token_ids: Box::into_raw(encoded.into_boxed_slice()) as *mut u32,
+            len: len,
+        };
     }
 }
 
 #[no_mangle]
-extern "C" fn tokenizers_get_encode_ids(
+extern "C" fn tokenizers_encode_batch(
     handle: *mut TokenizerWrapper,
-    out_data: *mut *mut u32,
-    out_len: *mut usize,
+    input_cstr: *const *const u8,
+    input_len: *const usize,
+    num_seqs: usize,
+    add_special_tokens: i32,
+    out_result: *mut TokenizerEncodeResult,
 ) {
     unsafe {
-        *out_data = (*handle).encode_ids.as_mut_ptr();
-        *out_len = (*handle).encode_ids.len()
+        let input_data = (0..num_seqs)
+            .map(|i| {
+                std::str::from_utf8(std::slice::from_raw_parts(*input_cstr.offset(i as isize), *input_len.offset(i as isize))).unwrap()
+            })
+            .collect::<Vec<&str>>();
+        let encoded_batch = (*handle).encode_batch(input_data, add_special_tokens != 0);
+        for (i, encoded) in encoded_batch.into_iter().enumerate() {
+            let len = encoded.len();
+            let result = TokenizerEncodeResult {
+                token_ids: Box::into_raw(encoded.into_boxed_slice()) as *mut u32,
+                len: len,
+            };
+            *out_result.offset(i as isize) = result;
+        }
+    }
+}
+
+#[no_mangle]
+extern "C" fn tokenizers_free_encode_results(results: *mut TokenizerEncodeResult, num_seqs: usize) {
+    unsafe {
+        let slice = std::slice::from_raw_parts_mut(results, num_seqs);
+        for result in &mut *slice {
+            drop(Box::from_raw(std::slice::from_raw_parts_mut(result.token_ids, result.len)));
+        }
     }
 }
 
@@ -183,5 +224,48 @@ extern "C" fn tokenizers_get_decode_str(
 extern "C" fn tokenizers_free(wrapper: *mut TokenizerWrapper) {
     unsafe {
         drop(Box::from_raw(wrapper));
+    }
+}
+
+#[no_mangle]
+extern "C" fn tokenizers_get_vocab_size(handle: *mut TokenizerWrapper, size: *mut usize) {
+    unsafe {
+        *size = (*handle).tokenizer.get_vocab_size(true);
+    }
+}
+
+#[no_mangle]
+extern "C" fn tokenizers_id_to_token(
+    handle: *mut TokenizerWrapper,
+    id: u32,
+    out_cstr: *mut *mut u8,
+    out_len: *mut usize,
+) {
+    unsafe {
+        let str = (*handle).tokenizer.id_to_token(id);
+        (*handle).id_to_token_result = match str {
+            Some(s) => s,
+            None => String::from(""),
+        };
+
+        *out_cstr = (*handle).id_to_token_result.as_mut_ptr();
+        *out_len = (*handle).id_to_token_result.len();
+    }
+}
+
+#[no_mangle]
+extern "C" fn tokenizers_token_to_id(
+    handle: *mut TokenizerWrapper,
+    token: *const u8,
+    len: usize,
+    out_id: *mut i32,
+) {
+    unsafe {
+        let token: &str = std::str::from_utf8(std::slice::from_raw_parts(token, len)).unwrap();
+        let id = (*handle).tokenizer.token_to_id(token);
+        *out_id = match id {
+            Some(id) => id as i32,
+            None => -1,
+        };
     }
 }

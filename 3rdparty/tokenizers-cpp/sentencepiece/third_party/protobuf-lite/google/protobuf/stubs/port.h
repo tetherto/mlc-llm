@@ -114,7 +114,7 @@
 #error "Protobuf requires at least C++11."
 #endif
 
-namespace google2 {
+namespace google {
 namespace protobuf {
 
 using ConstStringParam = const std::string &;

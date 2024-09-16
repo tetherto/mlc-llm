@@ -37,7 +37,7 @@
 
 #include <google/protobuf/stubs/logging.h>
 
-namespace google2 {
+namespace google {
 namespace protobuf {
 std::ostream& operator<<(std::ostream& o, StringPiece piece) {
   o.write(piece.data(), piece.size());

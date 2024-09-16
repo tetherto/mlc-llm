@@ -37,7 +37,7 @@
 #include <google/protobuf/repeated_field.h>
 #include <google/protobuf/wire_format_lite.h>
 
-namespace google2 {
+namespace google {
 namespace protobuf {
 namespace internal {
 

@@ -52,6 +52,9 @@ set(USE_PROFILER OFF)
 set(USE_GTEST OFF)
 set(USE_LIBBACKTRACE OFF)
 set(BUILD_DUMMY_LIBTVM ON)
+if (NOT DEFINED TVM_HOME)
+  set(TVM_HOME 3rdparty/tvm)
+endif (NOT DEFINED TVM_HOME)
 if (NOT DEFINED TVM_SOURCE_DIR)
   if(DEFINED ENV{TVM_SOURCE_DIR})
     set(TVM_SOURCE_DIR "$ENV{TVM_SOURCE_DIR}")
@@ -67,6 +70,9 @@ set(TOKENZIER_CPP_PATH 3rdparty/tokenizers-cpp)
 add_subdirectory(${TOKENZIER_CPP_PATH} tokenizers EXCLUDE_FROM_ALL)
 
 tvm_file_glob(GLOB_RECURSE MLC_LLM_SRCS cpp/*.cc)
+tvm_file_glob(GLOB_RECURSE MLC_CLI_SRCS cpp/cli_main.cc)
+list(REMOVE_ITEM MLC_LLM_SRCS ${MLC_CLI_SRCS})
+
 add_library(mlc_llm_objs OBJECT ${MLC_LLM_SRCS})
 
 set(MLC_LLM_INCLUDES ${TVM_HOME}/include
@@ -86,6 +92,7 @@ target_include_directories(mlc_llm_objs PRIVATE 3rdparty/stb)
 
 add_library(mlc_llm_static STATIC $<TARGET_OBJECTS:mlc_llm_objs>)
 add_dependencies(mlc_llm_static tokenizers_cpp sentencepiece-static tokenizers_c tvm_runtime)
+add_compile_options(-Wno-array-bounds)
 set_target_properties(mlc_llm_static PROPERTIES OUTPUT_NAME mlc_llm_static)
 
 find_library(
@@ -96,11 +103,11 @@ find_library(
 if (FLASH_ATTN_LIBRARY STREQUAL "FLASH_ATTN_LIBRARY-NOTFOUND")
   message(WARNING "Cannot find libflash_attn. The model must not have been built with --use-flash-attn-mqa option.")
 else ()
-  target_link_libraries(mlc_llm PUBLIC -Wl,--no-as-needed ${FLASH_ATTN_LIBRARY})
+  target_link_libraries(mlc_llm_static PUBLIC -Wl,--no-as-needed ${FLASH_ATTN_LIBRARY})
 endif()
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    target_compile_definitions(mlc_llm PRIVATE "TVM_LOG_DEBUG")
+    target_compile_definitions(mlc_llm_static PRIVATE "TVM_LOG_DEBUG")
     target_compile_definitions(mlc_llm_objs PRIVATE "TVM_LOG_DEBUG")
     target_compile_definitions(mlc_llm_static PRIVATE "TVM_LOG_DEBUG")
 endif()
@@ -116,7 +123,7 @@ if (BUILD_CPP_TEST)
 endif(BUILD_CPP_TEST)
 
 if (CMAKE_SYSTEM_NAME STREQUAL "Android")
-  target_link_libraries(mlc_llm PRIVATE log)
+ 
   target_link_libraries(tokenizers_cpp PRIVATE log)
 endif()
 
@@ -125,4 +132,3 @@ find_program(CARGO_EXECUTABLE cargo)
 if(NOT CARGO_EXECUTABLE)
   message(FATAL_ERROR "Cargo is not found! Please install cargo.")
 endif()
-

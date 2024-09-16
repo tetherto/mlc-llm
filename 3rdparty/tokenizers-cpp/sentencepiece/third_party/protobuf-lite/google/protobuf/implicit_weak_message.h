@@ -47,7 +47,7 @@
 // This file is logically internal-only and should only be used by protobuf
 // generated code.
 
-namespace google2 {
+namespace google {
 namespace protobuf {
 namespace internal {
 

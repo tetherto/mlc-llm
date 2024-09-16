@@ -71,7 +71,7 @@
 #include <string>
 #include <vector>
 
-namespace google2 {
+namespace google {
 namespace protobuf {
 namespace io {
 namespace win32 {
