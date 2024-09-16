@@ -79,7 +79,11 @@ ModelMetadata ModelMetadata::FromJSON(const picojson::object& metadata,
   result.quantization = json::Lookup<std::string>(metadata, "quantization");
   result.context_window_size = json::Lookup<int64_t>(metadata, "context_window_size");
   result.prefill_chunk_size = json::Lookup<int64_t>(metadata, "prefill_chunk_size");
-  result.max_batch_size = json::Lookup<int64_t>(metadata, "max_batch_size");
+  if (metadata.count("max_batch_size")){
+    result.max_batch_size = json::Lookup<int64_t>(metadata, "max_batch_size");
+  }else{
+    result.max_batch_size = 1;
+  }
   if (metadata.count("sliding_window_size"))
     result.sliding_window_size = json::Lookup<int64_t>(metadata, "sliding_window_size");
   if (metadata.count("sliding_window"))  // to be removed after SLM migration
@@ -90,7 +94,7 @@ ModelMetadata ModelMetadata::FromJSON(const picojson::object& metadata,
   result.pipeline_parallel_stages =
       json::LookupOrDefault<int64_t>(metadata, "pipeline_parallel_stages", 1);
   result.kv_state_kind = KVStateKindFromString(
-      json::LookupOrDefault<std::string>(metadata, "kv_state_kind", "kv_cache"));
+      json::LookupOrDefault<std::string>(metadata, "kv_state_kind", "none"));//set kvcache to none by default
   if (result.kv_state_kind != KVStateKind::kNone &&
       result.kv_state_kind != KVStateKind::kRNNState) {
     result.kv_cache_metadata =

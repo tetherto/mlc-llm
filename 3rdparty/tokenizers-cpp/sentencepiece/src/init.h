@@ -43,7 +43,7 @@ inline void ParseCommandLineFlags(const char *usage, int *argc, char ***argv,
 }
 
 inline void ShutdownLibrary() {
-  google2::protobuf::ShutdownProtobufLibrary();
+  google::protobuf::ShutdownProtobufLibrary();
 #ifdef HAS_ABSL_CLEANUP_FLAGS
   absl::CleanupFlags();
 #endif

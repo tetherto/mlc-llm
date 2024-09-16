@@ -61,7 +61,7 @@ using type_info = ::type_info;
 #error "You cannot SWIG proto headers"
 #endif
 
-namespace google2 {
+namespace google {
 namespace protobuf {
 
 struct ArenaOptions;  // defined below
@@ -69,7 +69,7 @@ struct ArenaOptions;  // defined below
 }  // namespace protobuf
 }  // namespace google
 
-namespace google2 {
+namespace google {
 namespace protobuf {
 
 class Arena;    // defined below

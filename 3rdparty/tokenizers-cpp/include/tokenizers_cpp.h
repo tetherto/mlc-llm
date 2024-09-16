@@ -30,11 +30,19 @@ class Tokenizer {
   virtual std::vector<int32_t> Encode(const std::string& text) = 0;
 
   /*!
-   * \brief Encode text into text.
-   * \param text The input text.
-   * \returns The encoded text.
+   * \brief Encode a batch of texts into ids.
+   * \param texts The input texts.
+   * \returns The encoded token ids.
    */
-  virtual std::vector<std::string> EncodeAsText(const std::string& text) = 0;
+  virtual std::vector<std::vector<int32_t>> EncodeBatch(const std::vector<std::string>& texts) {
+    // Fall back when the derived class does not implement this function.
+    std::vector<std::vector<int32_t>> ret;
+    ret.reserve(texts.size());
+    for (const auto& text : texts) {
+      ret.push_back(Encode(text));
+    }
+    return ret;
+  }
 
   /*!
    * \brief Decode token ids into text.
@@ -42,6 +50,22 @@ class Tokenizer {
    * \returns The decoded text.
    */
   virtual std::string Decode(const std::vector<int32_t>& ids) = 0;
+
+  /*!
+   * \brief Returns the vocabulary size. Special tokens are considered.
+   */
+  virtual size_t GetVocabSize() = 0;
+
+  /*!
+   * \brief Convert the given id to its corresponding token if it exists. If not, return an
+   * empty string.
+   */
+  virtual std::string IdToToken(int32_t token_id) = 0;
+
+  /*!
+   * \brief Convert the given token to its corresponding id if it exists. If not, return -1.
+   */
+  virtual int32_t TokenToId(const std::string& token) = 0;
 
   //---------------------------------------------------
   // Factory functions from byte-blobs

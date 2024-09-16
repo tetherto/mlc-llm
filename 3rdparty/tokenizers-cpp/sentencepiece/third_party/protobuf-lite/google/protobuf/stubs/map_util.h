@@ -42,7 +42,7 @@
 
 #include <google/protobuf/stubs/common.h>
 
-namespace google2 {
+namespace google {
 namespace protobuf {
 namespace internal {
 // Local implementation of RemoveConst to avoid including base/type_traits.h.
