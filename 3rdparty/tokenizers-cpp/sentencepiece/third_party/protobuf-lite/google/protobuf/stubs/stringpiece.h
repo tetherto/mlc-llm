@@ -152,7 +152,7 @@
 
 #include <google/protobuf/port_def.inc>
 
-namespace google2 {
+namespace google {
 namespace protobuf {
 // StringPiece has *two* size types.
 // StringPiece::size_type

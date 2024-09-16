@@ -39,11 +39,11 @@
 #include <unordered_set>
 
 # define GOOGLE_PROTOBUF_HASH_NAMESPACE_DECLARATION_START \
-  namespace google2 {                                      \
+  namespace google {                                      \
   namespace protobuf {
 # define GOOGLE_PROTOBUF_HASH_NAMESPACE_DECLARATION_END }}
 
-namespace google2 {
+namespace google {
 namespace protobuf {
 
 template <typename Key>

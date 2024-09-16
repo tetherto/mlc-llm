@@ -36,7 +36,7 @@
 #include <google/protobuf/port_def.inc>
 #include <type_traits>
 
-namespace google2 {
+namespace google {
 namespace protobuf {
 namespace internal {
 

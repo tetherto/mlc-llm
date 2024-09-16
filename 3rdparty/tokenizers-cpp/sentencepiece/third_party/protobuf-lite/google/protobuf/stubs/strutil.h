@@ -41,7 +41,7 @@
 #include <google/protobuf/port_def.inc>
 #include <vector>
 
-namespace google2 {
+namespace google {
 namespace protobuf {
 
 #if defined(_MSC_VER) && _MSC_VER < 1800

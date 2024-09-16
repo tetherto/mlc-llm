@@ -60,7 +60,7 @@
 
 class CordByteSink;
 
-namespace google2 {
+namespace google {
 namespace protobuf {
 namespace strings {
 

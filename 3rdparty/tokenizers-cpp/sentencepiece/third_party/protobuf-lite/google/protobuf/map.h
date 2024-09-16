@@ -62,7 +62,7 @@
 
 #include <google/protobuf/port_def.inc>
 
-namespace google2 {
+namespace google {
 namespace protobuf {
 
 template <typename Key, typename T>

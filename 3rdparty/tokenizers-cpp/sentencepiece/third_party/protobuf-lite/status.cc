@@ -34,7 +34,7 @@
 #include <string>
 #include <utility>
 
-namespace google2 {
+namespace google {
 namespace protobuf {
 namespace util {
 namespace error {

@@ -40,11 +40,19 @@ elseif (CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     set(TOKENIZERS_CPP_CARGO_TARGET aarch64-apple-darwin)
   endif()
 elseif (CMAKE_SYSTEM_NAME STREQUAL "Android")
-  set(TOKENIZERS_CPP_CARGO_TARGET aarch64-linux-android)
+  if (ANDROID_ABI STREQUAL "arm64-v8a")
+    set(TOKENIZERS_CPP_CARGO_TARGET aarch64-linux-android)
+  elseif (ANDROID_ABI STREQUAL "armeabi-v7a")
+    set(TOKENIZERS_CPP_CARGO_TARGET armv7-linux-androideabi)
+  elseif (ANDROID_ABI STREQUAL "x86_64")
+    set(TOKENIZERS_CPP_CARGO_TARGET x86_64-linux-android)
+  elseif (ANDROID_ABI STREQUAL "x86")
+    set(TOKENIZERS_CPP_CARGO_TARGET i686-linux-android)
+  endif()
   set(CARGO_EXTRA_ENVS
-    AR_aarch64_linux_android=${ANDROID_TOOLCHAIN_ROOT}/bin/llvm-ar
-    CC_aarch64_linux_android=${ANDROID_TOOLCHAIN_ROOT}/bin/aarch64-linux-android${ANDROID_NATIVE_API_LEVEL}-clang
-    CXX_aarch64_linux_android=${ANDROID_TOOLCHAIN_ROOT}/bin/aarch64-linux-android${ANDROID_NATIVE_API_LEVEL}-clang++
+    AR_${TOKENIZERS_CPP_CARGO_TARGET}=${ANDROID_TOOLCHAIN_ROOT}/bin/llvm-ar
+    CC_${TOKENIZERS_CPP_CARGO_TARGET}=${ANDROID_TOOLCHAIN_ROOT}/bin/${TOKENIZERS_CPP_CARGO_TARGET}${ANDROID_NATIVE_API_LEVEL}-clang
+    CXX_${TOKENIZERS_CPP_CARGO_TARGET}=${ANDROID_TOOLCHAIN_ROOT}/bin/${TOKENIZERS_CPP_CARGO_TARGET}${ANDROID_NATIVE_API_LEVEL}-clang++
   )
 elseif (CMAKE_SYSTEM_NAME STREQUAL "Windows")
   set(TOKENIZERS_CPP_CARGO_TARGET x86_64-pc-windows-msvc)
@@ -80,6 +88,8 @@ set(TOKENIZERS_CPP_CARGO_SOURCE_PATH ${TOKENIZERS_CPP_ROOT}/rust)
 option(MSGPACK_USE_BOOST "Use Boost libraried" OFF)
 add_subdirectory(msgpack)
 
+option(MLC_ENABLE_SENTENCEPIECE_TOKENIZER "Enable SentencePiece tokenizer" ON)
+
 if(MSVC)
   set(TOKENIZERS_RUST_LIB "${TOKENIZERS_CPP_CARGO_BINARY_DIR}/tokenizers_c.lib")
 else()
@@ -112,6 +122,9 @@ add_library(tokenizer_cpp_objs OBJECT ${TOKENIZER_CPP_SRCS})
 target_include_directories(tokenizer_cpp_objs PRIVATE sentencepiece/src)
 target_include_directories(tokenizer_cpp_objs PRIVATE msgpack/include)
 target_include_directories(tokenizer_cpp_objs PUBLIC ${TOKENIZERS_CPP_INCLUDE})
+if (MLC_ENABLE_SENTENCEPIECE_TOKENIZER STREQUAL "ON")
+  target_compile_definitions(tokenizer_cpp_objs PUBLIC MLC_ENABLE_SENTENCEPIECE_TOKENIZER)
+endif ()
 target_link_libraries(tokenizer_cpp_objs PRIVATE msgpack-cxx)
 
 # sentencepiece config

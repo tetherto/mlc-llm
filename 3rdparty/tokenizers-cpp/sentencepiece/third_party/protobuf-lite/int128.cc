@@ -38,7 +38,7 @@
 
 #include <google/protobuf/port_def.inc>
 
-namespace google2 {
+namespace google {
 namespace protobuf {
 
 const uint128_pod kuint128max = {
