@@ -2,14 +2,10 @@ cmake_minimum_required(VERSION 3.18)
 project(mlc_llm C CXX)
 
 include(CheckCXXCompilerFlag)
-if(NOT MSVC)
-  check_cxx_compiler_flag("-std=c++17" SUPPORT_CXX17)
-  set(CMAKE_CXX_FLAGS "-std=c++17 ${CMAKE_CXX_FLAGS}")
-  set(CMAKE_CUDA_STANDARD 17)
+if(MSVC)
+  set(CMAKE_CXX_FLAGS "/fp:fast ${CMAKE_CXX_FLAGS}")
 else()
-  check_cxx_compiler_flag("/std:c++17" SUPPORT_CXX17)
-  set(CMAKE_CXX_FLAGS "/std:c++17 ${CMAKE_CXX_FLAGS}")
-  set(CMAKE_CUDA_STANDARD 17)
+  set(CMAKE_CXX_FLAGS "-ffast-math ${CMAKE_CXX_FLAGS}")
 endif()
 
 if(EXISTS ${CMAKE_BINARY_DIR}/config.cmake)
@@ -42,6 +38,8 @@ endif()
 
 option(BUILD_CPP_TEST "Build cpp unittests" OFF)
 
+set(CMAKE_CUDA_STANDARD 17)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 # tvm runtime config: minimize runtime components
@@ -54,20 +52,21 @@ set(USE_PROFILER OFF)
 set(USE_GTEST OFF)
 set(USE_LIBBACKTRACE OFF)
 set(BUILD_DUMMY_LIBTVM ON)
-if (NOT DEFINED TVM_HOME)
-  set(TVM_HOME 3rdparty/tvm)
-endif (NOT DEFINED TVM_HOME)
-message(STATUS "TVM_HOME: ${TVM_HOME}")
-add_subdirectory(${TVM_HOME} tvm EXCLUDE_FROM_ALL)
+if (NOT DEFINED TVM_SOURCE_DIR)
+  if(DEFINED ENV{TVM_SOURCE_DIR})
+    set(TVM_SOURCE_DIR "$ENV{TVM_SOURCE_DIR}")
+  else()
+    set(TVM_SOURCE_DIR 3rdparty/tvm)
+  endif(DEFINED ENV{TVM_SOURCE_DIR})
+endif (NOT DEFINED TVM_SOURCE_DIR)
+message(STATUS "TVM_SOURCE_DIR: ${TVM_SOURCE_DIR}")
+add_subdirectory(${TVM_SOURCE_DIR} tvm EXCLUDE_FROM_ALL)
 
 set(MLC_LLM_RUNTIME_LINKER_LIB "")
 set(TOKENZIER_CPP_PATH 3rdparty/tokenizers-cpp)
 add_subdirectory(${TOKENZIER_CPP_PATH} tokenizers EXCLUDE_FROM_ALL)
 
 tvm_file_glob(GLOB_RECURSE MLC_LLM_SRCS cpp/*.cc)
-tvm_file_glob(GLOB_RECURSE MLC_CLI_SRCS cpp/cli_main.cc)
-list(REMOVE_ITEM MLC_LLM_SRCS ${MLC_CLI_SRCS})
-
 add_library(mlc_llm_objs OBJECT ${MLC_LLM_SRCS})
 
 set(MLC_LLM_INCLUDES ${TVM_HOME}/include
@@ -77,22 +76,33 @@ set(MLC_LLM_INCLUDES ${TVM_HOME}/include
 
 set(MLC_LLM_COMPILE_DEFS ${MLC_LLM_COMPILE_DEFS} DMLC_USE_LOGGING_LIBRARY=<tvm/runtime/logging.h>)
 set(MLC_LLM_COMPILE_DEFS ${MLC_LLM_COMPILE_DEFS} __STDC_FORMAT_MACROS=1)
+set(MLC_LLM_COMPILE_DEFS ${MLC_LLM_COMPILE_DEFS} PICOJSON_USE_INT64)
 
 target_include_directories(mlc_llm_objs PRIVATE ${MLC_LLM_INCLUDES})
 target_compile_definitions(mlc_llm_objs PRIVATE ${MLC_LLM_COMPILE_DEFS})
 target_include_directories(mlc_llm_objs PRIVATE ${TOKENZIER_CPP_PATH}/include)
 target_compile_definitions(mlc_llm_objs PRIVATE -DMLC_LLM_EXPORTS)
+target_include_directories(mlc_llm_objs PRIVATE 3rdparty/stb)
 
 add_library(mlc_llm_static STATIC $<TARGET_OBJECTS:mlc_llm_objs>)
 add_dependencies(mlc_llm_static tokenizers_cpp sentencepiece-static tokenizers_c tvm_runtime)
 set_target_properties(mlc_llm_static PROPERTIES OUTPUT_NAME mlc_llm_static)
 
-find_library(FLASH_ATTN_LIBRARY flash_attn)
+find_library(
+  FLASH_ATTN_LIBRARY flash_attn
+  HINTS ${TVM_SOURCE_DIR}/*/3rdparty/libflash_attn/src
+)
 
 if (FLASH_ATTN_LIBRARY STREQUAL "FLASH_ATTN_LIBRARY-NOTFOUND")
   message(WARNING "Cannot find libflash_attn. The model must not have been built with --use-flash-attn-mqa option.")
 else ()
-  target_link_libraries(mlc_llm_static PUBLIC -Wl,--no-as-needed ${FLASH_ATTN_LIBRARY})
+  target_link_libraries(mlc_llm PUBLIC -Wl,--no-as-needed ${FLASH_ATTN_LIBRARY})
+endif()
+
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    target_compile_definitions(mlc_llm PRIVATE "TVM_LOG_DEBUG")
+    target_compile_definitions(mlc_llm_objs PRIVATE "TVM_LOG_DEBUG")
+    target_compile_definitions(mlc_llm_static PRIVATE "TVM_LOG_DEBUG")
 endif()
 
 if (BUILD_CPP_TEST)
@@ -106,6 +116,7 @@ if (BUILD_CPP_TEST)
 endif(BUILD_CPP_TEST)
 
 if (CMAKE_SYSTEM_NAME STREQUAL "Android")
+  target_link_libraries(mlc_llm PRIVATE log)
   target_link_libraries(tokenizers_cpp PRIVATE log)
 endif()
 
