@@ -1,6 +1,6 @@
 <div align="center">
 
-# MLC LLM
+# MLC LLMM
 
 [![Installation](https://img.shields.io/badge/docs-latest-green)](https://llm.mlc.ai/docs/)
 [![License](https://img.shields.io/badge/license-apache_2-blue)](https://github.com/mlc-ai/mlc-llm/blob/main/LICENSE)
