@@ -12,4 +12,5 @@
 	url = https://github.com/nothings/stb.git
 [submodule "3rdparty/tokenizers-cpp"]
 	path = 3rdparty/tokenizers-cpp
-	url = https://github.com/mlc-ai/tokenizers-cpp.git
+	url = ../tokenizers-cpp.git
+	branch = base/v1
