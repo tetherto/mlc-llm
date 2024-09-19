@@ -92,7 +92,9 @@ target_include_directories(mlc_llm_objs PRIVATE 3rdparty/stb)
 
 add_library(mlc_llm_static STATIC $<TARGET_OBJECTS:mlc_llm_objs>)
 add_dependencies(mlc_llm_static tokenizers_cpp sentencepiece-static tokenizers_c tvm_runtime)
+
 add_compile_options(-Wno-array-bounds)
+
 set_target_properties(mlc_llm_static PROPERTIES OUTPUT_NAME mlc_llm_static)
 
 find_library(
@@ -123,7 +125,6 @@ if (BUILD_CPP_TEST)
 endif(BUILD_CPP_TEST)
 
 if (CMAKE_SYSTEM_NAME STREQUAL "Android")
- 
   target_link_libraries(tokenizers_cpp PRIVATE log)
 endif()
 
