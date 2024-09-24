@@ -1,12 +1,15 @@
 [submodule "3rdparty/argparse"]
 	path = 3rdparty/argparse
-    url = ../../p-ranav/argparse
+  url = ../../p-ranav/argparse
 [submodule "3rdparty/googletest"]
 	path = 3rdparty/googletest
 	url = ../../google/googletest.git
 [submodule "3rdparty/tvm"]
 	path = 3rdparty/tvm
 	url = ../../mlc-ai/relax.git
+[submodule "3rdparty/stb"]
+	path = 3rdparty/stb
+	url = https://github.com/nothings/stb.git
 [submodule "3rdparty/tokenizers-cpp"]
 	path = 3rdparty/tokenizers-cpp
 	url = ../tokenizers-cpp.git

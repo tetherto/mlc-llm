@@ -1,3 +1,5 @@
+# Command to prepare the mlc llm static libraries
+# This command will be invoked by the "mlc_llm package" command
 function help {
     echo -e "OPTION:"
     echo -e "  -s, --simulator                      Build for Simulator"
@@ -5,6 +7,7 @@ function help {
     echo -e "  -h,  --help                          Prints this help\n"
 }
 
+MLC_LLM_SOURCE_DIR="${MLC_LLM_SOURCE_DIR:-..}"
 is_simulator="false"
 arch="arm64"
 
@@ -51,7 +54,7 @@ fi
 
 mkdir -p build/ && cd build/
 
-cmake ../..\
+cmake $MLC_LLM_SOURCE_DIR\
   -DCMAKE_BUILD_TYPE=$type\
   -DCMAKE_SYSTEM_NAME=iOS\
   -DCMAKE_SYSTEM_VERSION=14.0\
@@ -64,11 +67,10 @@ cmake ../..\
   -DCMAKE_CXX_FLAGS="-O3"\
   -DMLC_LLM_INSTALL_STATIC_LIB=ON\
   -DUSE_METAL=ON
-make mlc_llm_static
+
+cmake --build . --config release --target mlc_llm_static -j
 cmake --build . --target install --config release -j
 cd ..
 
-rm -rf MLCSwift/tvm_home
-ln -s ../../3rdparty/tvm MLCSwift/tvm_home
-
-python prepare_model_lib.py
+rm -rf $MLC_LLM_SOURCE_DIR/ios/MLCSwift/tvm_home
+ln -s $MLC_LLM_SOURCE_DIR/3rdparty/tvm $MLC_LLM_SOURCE_DIR/ios/MLCSwift/tvm_home

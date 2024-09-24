@@ -1,15 +1,11 @@
 #!/bin/bash
-export NUM_THREADS=$(nproc)
-export PYTHONPATH="./python:$PYTHONPATH"
-
 set -eo pipefail
 set -x
-
-GPU="cuda-12.1"
-WORKSPACE_CWD=$(pwd)
-PYTHON_BIN=/opt/conda/envs/py38/bin/python
+: ${NUM_THREADS:=$(nproc)}
+: ${WORKSPACE_CWD:=$(pwd)}
+: ${GPU:="cpu"}
 
 rm -rf ${WORKSPACE_CWD}/build/ \
 	${WORKSPACE_CWD}/python/dist/ \
 	${WORKSPACE_CWD}/python/build/ \
-	${WORKSPACE_CWD}/python/mlc_chat.egg-info
+	${WORKSPACE_CWD}/python/mlc_llm.egg-info

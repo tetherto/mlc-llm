@@ -17,6 +17,7 @@ Select your operating system/compute platform and run the command in your termin
 
 .. note::
     ❗ Whenever using Python, it is highly recommended to use **conda** to manage an isolated Python environment to avoid missing dependencies, incompatible versions, and package conflicts.
+    Please make sure your conda environment has Python and pip installed.
 
 .. tabs::
 
@@ -29,55 +30,51 @@ Select your operating system/compute platform and run the command in your termin
                 .. code-block:: bash
 
                     conda activate your-environment
-                    python3 -m pip install --pre -U -f https://mlc.ai/wheels mlc-chat-nightly mlc-ai-nightly
-
-            .. tab:: CUDA 11.7
-
-                .. code-block:: bash
-
-                    conda activate your-environment
-                    python3 -m pip install --pre -U -f https://mlc.ai/wheels mlc-chat-nightly-cu117 mlc-ai-nightly-cu117
-
-            .. tab:: CUDA 11.8
-
-                .. code-block:: bash
-
-                    conda activate your-environment
-                    python3 -m pip install --pre -U -f https://mlc.ai/wheels mlc-chat-nightly-cu118 mlc-ai-nightly-cu118
+                    python -m pip install --pre -U -f https://mlc.ai/wheels mlc-llm-nightly-cpu mlc-ai-nightly-cpu
 
             .. tab:: CUDA 12.1
 
                 .. code-block:: bash
 
                     conda activate your-environment
-                    python3 -m pip install --pre -U -f https://mlc.ai/wheels mlc-chat-nightly-cu121 mlc-ai-nightly-cu121
+                    python -m pip install --pre -U -f https://mlc.ai/wheels mlc-llm-nightly-cu121 mlc-ai-nightly-cu121
 
             .. tab:: CUDA 12.2
 
                 .. code-block:: bash
 
                     conda activate your-environment
-                    python3 -m pip install --pre -U -f https://mlc.ai/wheels mlc-chat-nightly-cu122 mlc-ai-nightly-cu122
+                    python -m pip install --pre -U -f https://mlc.ai/wheels mlc-llm-nightly-cu122 mlc-ai-nightly-cu122
 
-            .. tab:: ROCm 5.6
-
-                .. code-block:: bash
-
-                    conda activate your-environment
-                    python3 -m pip install --pre -U -f https://mlc.ai/wheels mlc-chat-nightly-rocm56 mlc-ai-nightly-rocm56
-    
-            .. tab:: ROCm 5.7
+            .. tab:: ROCm 6.1
 
                 .. code-block:: bash
 
                     conda activate your-environment
-                    python3 -m pip install --pre -U -f https://mlc.ai/wheels mlc-chat-nightly-rocm57 mlc-ai-nightly-rocm57
+                    python -m pip install --pre -U -f https://mlc.ai/wheels mlc-llm-nightly-rocm61 mlc-ai-nightly-rocm61
+
+            .. tab:: ROCm 6.2
+
+                .. code-block:: bash
+
+                    conda activate your-environment
+                    python -m pip install --pre -U -f https://mlc.ai/wheels mlc-llm-nightly-rocm62 mlc-ai-nightly-rocm62
 
             .. tab:: Vulkan
 
-                Supported in all Linux packages.
+                Supported in all Linux packages. Checkout the following instructions
+                to install the latest vulkan loader to avoid vulkan not found issue.
+
+                .. code-block:: bash
+
+                    conda install -c conda-forge gcc libvulkan-loader
 
         .. note::
+            We need git-lfs in the system, you can install it via
+
+            .. code-block:: bash
+
+                conda install -c conda-forge git-lfs
 
             If encountering issues with GLIBC not found, please install the latest glibc in conda:
 
@@ -101,7 +98,7 @@ Select your operating system/compute platform and run the command in your termin
                 .. code-block:: bash
 
                     conda activate your-environment
-                    python3 -m pip install --pre -U -f https://mlc.ai/wheels mlc-chat-nightly mlc-ai-nightly
+                    python -m pip install --pre -U -f https://mlc.ai/wheels mlc-llm-nightly-cpu mlc-ai-nightly-cpu
 
         .. note::
 
@@ -112,6 +109,11 @@ Select your operating system/compute platform and run the command in your termin
                 conda info | grep platform
 
             It should return "osx-64" for Mac with Intel chip, and "osx-arm64" for Mac with Apple chip.
+            We need git-lfs in the system, you can install it via
+
+            .. code-block:: bash
+
+                conda install -c conda-forge git-lfs
 
     .. tab:: Windows
 
@@ -122,9 +124,18 @@ Select your operating system/compute platform and run the command in your termin
                 .. code-block:: bash
 
                     conda activate your-environment
-                    python3 -m pip install --pre -U -f https://mlc.ai/wheels mlc-chat-nightly mlc-ai-nightly
+                    python -m pip install --pre -U -f https://mlc.ai/wheels mlc-llm-nightly-cpu mlc-ai-nightly-cpu
 
         .. note::
+            Please make sure your conda environment comes with python and pip.
+            Make sure you also install the following packages,
+            vulkan loader, clang, git and git-lfs to enable proper automatic download
+            and jit compilation.
+
+            .. code-block:: bash
+
+                conda install -c conda-forge clang libvulkan-loader git-lfs git
+
             If encountering the error below:
 
             .. code-block:: bash
@@ -142,8 +153,8 @@ Then you can verify installation in command line:
 
 .. code-block:: bash
 
-    python -c "import mlc_chat; print(mlc_chat)"
-    # Prints out: <module 'mlc_chat' from '/path-to-env/lib/python3.11/site-packages/mlc_chat/__init__.py'>
+    python -c "import mlc_llm; print(mlc_llm)"
+    # Prints out: <module 'mlc_llm' from '/path-to-env/lib/python3.11/site-packages/mlc_llm/__init__.py'>
 
 |
 
@@ -152,7 +163,7 @@ Then you can verify installation in command line:
 Option 2. Build from Source
 ---------------------------
 
-We also provide options to build mlc runtime libraries ``mlc_chat`` (Python) and ``mlc_chat_cli`` (CLI) from source.
+We also provide options to build mlc runtime libraries ``mlc_llm`` from source.
 This step is useful when you want to make modification or obtain a specific version of mlc runtime.
 
 
@@ -176,7 +187,8 @@ This step is useful when you want to make modification or obtain a specific vers
     conda create -n mlc-chat-venv -c conda-forge \
         "cmake>=3.24" \
         rust \
-        git
+        git \
+        python=3.11
     # enter the build environment
     conda activate mlc-chat-venv
 
@@ -194,39 +206,48 @@ This step is useful when you want to make modification or obtain a specific vers
     # create build directory
     mkdir -p build && cd build
     # generate build configuration
-    python3 ../cmake/gen_cmake_config.py
-    # build `mlc_chat_cli`
+    python ../cmake/gen_cmake_config.py
+    # build mlc_llm libraries
     cmake .. && cmake --build . --parallel $(nproc) && cd ..
 
-**Step 3. Validate installation.** You may validate if MLCChat CLI is compiled successfully using the following command:
+.. note::
+    If you are using CUDA and your compute capability is above 80, then it is require to build with
+    ``set(USE_FLASHINFER ON)``. Otherwise, you may run into ``Cannot find PackedFunc`` issue during
+    runtime.
 
-.. code-block:: bash
-    :caption: Validate installation
+    To check your CUDA compute capability, you can use ``nvidia-smi --query-gpu=compute_cap --format=csv``.
 
-    # expected to see `mlc_chat_cli`, `libmlc_llm.so` and `libtvm_runtime.so`
-    ls -l ./build/
-    # expected to see help message
-    ./build/mlc_chat_cli --help
-
-**Step 4. Install via Python.** Besides the command line interface ``mlc_chat_cli``, you can also install ``mlc_chat`` as a Python package,
-giving you access to both ``mlc_chat.compile`` and ``mlc_chat.ChatModule``.
+**Step 3. Install via Python.** We recommend that you install ``mlc_llm`` as a Python package, giving you
+access to ``mlc_llm.compile``, ``mlc_llm.MLCEngine``, and the CLI.
 There are two ways to do so:
 
     .. tabs ::
 
        .. code-tab :: bash Install via environment variable
 
-          export PYTHONPATH=/path-to-mlc-llm/python:$PYTHONPATH
+          export MLC_LLM_SOURCE_DIR=/path-to-mlc-llm
+          export PYTHONPATH=$MLC_LLM_SOURCE_DIR/python:$PYTHONPATH
+          alias mlc_llm="python -m mlc_llm"
 
        .. code-tab :: bash Install via pip local project
 
           conda activate your-own-env
-          conda install python # make sure python is installed
+          which python # make sure python is installed, expected output: path_to_conda/envs/your-own-env/bin/python
           cd /path-to-mlc-llm/python
           pip install -e .
+
+**Step 4. Validate installation.** You may validate if MLC libarires and mlc_llm CLI is compiled successfully using the following command:
+
+.. code-block:: bash
+    :caption: Validate installation
+
+    # expected to see `libmlc_llm.so` and `libtvm_runtime.so`
+    ls -l ./build/
+    # expected to see help message
+    mlc_llm chat -h
 
 Finally, you can verify installation in command line. You should see the path you used to build from source with:
 
 .. code:: bash
 
-   python -c "import mlc_chat; print(mlc_chat)"
+   python -c "import mlc_llm; print(mlc_llm)"

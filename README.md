@@ -1,13 +1,23 @@
-[discord-url]: https://discord.gg/9Xpy2HGBuD
+<div align="center">
 
 # MLC LLM
 
-[Documentation](https://llm.mlc.ai/docs) | [Blog](https://blog.mlc.ai/) | [Discord][discord-url]
+[![Installation](https://img.shields.io/badge/docs-latest-green)](https://llm.mlc.ai/docs/)
+[![License](https://img.shields.io/badge/license-apache_2-blue)](https://github.com/mlc-ai/mlc-llm/blob/main/LICENSE)
+[![Join Discoard](https://img.shields.io/badge/Join-Discord-7289DA?logo=discord&logoColor=white)]("https://discord.gg/9Xpy2HGBuD")
+[![Related Repository: WebLLM](https://img.shields.io/badge/Related_Repo-WebLLM-fafbfc?logo=github)](https://github.com/mlc-ai/web-llm/)
 
-**M**achine **L**earning **C**ompilation for **L**arge **L**anguage **M**odels (MLC LLM) is a high-performance universal deployment solution that allows native deployment of any large language models with native APIs with compiler acceleration. The mission of this project is to enable everyone to develop, optimize and deploy AI models natively on everyone's devices with ML compilation techniques.
+**Universal LLM Deployment Engine with ML Compilation**
 
-**Universal deployment.** MLC LLM supports the following platforms and hardware:
+[Get Started](https://llm.mlc.ai/docs/get_started/quick_start) | [Documentation](https://llm.mlc.ai/docs) | [Blog](https://blog.mlc.ai/)
 
+</div>
+
+## About
+
+MLC LLM is a machine learning compiler and high-performance deployment engine for large language models.  The mission of this project is to enable everyone to develop, optimize, and deploy AI models natively on everyone's platforms. 
+
+<div align="center">
 <table style="width:100%">
   <thead>
     <tr>
@@ -48,97 +58,16 @@
     </tr>
   </tbody>
 </table>
+</div>
 
+MLC LLM compiles and runs code on MLCEngine -- a unified high-performance LLM inference engine across the above platforms. MLCEngine provides OpenAI-compatible API available through REST server, python, javascript, iOS, Android, all backed by the same engine and compiler that we keep improving with the community.
 
-**Scalable.** MLC LLM scales universally on NVIDIA and AMD GPUs, cloud and gaming GPUs. Below
-showcases our single batch decoding performance with prefilling = 1 and decoding = 256.
+## Get Started
 
-Performance of 4-bit CodeLlama-34B and Llama2-70B on two NVIDIA RTX 4090 and two AMD Radeon 7900 XTX:
-<p float="left">
-  <img src="site/img/multi-gpu/figure-1.svg" width="40%"/>
-  <img src="site/img/multi-gpu/figure-3.svg" width="30%"/>
-</p>
-
-Scaling of fp16 and 4-bit CodeLlama-34 and Llama2-70B on A100-80G-PCIe and A10G-24G-PCIe, up to 8 GPUs:
-<p float="center">
-  <img src="site/img/multi-gpu/figure-2.svg" width="100%"/>
-</p>
-
-## News
-
-* [10/18/2023] [[Post]](https://blog.mlc.ai/2023/10/19/Scalable-Language-Model-Inference-on-Multiple-NVDIA-AMD-GPUs) Scalable multi-GPU support for CUDA and ROCm are official.
-* [09/02/2023] Prebuilt ROCm 5.7 and CUDA 12.2 package is [available](https://llm.mlc.ai/docs/install/tvm.html#option-1-prebuilt-package).
-* [08/25/2023] CodeLlama support is up.
-* [08/14/2023] [[Post]](https://blog.mlc.ai/2023/08/09/GPU-Accelerated-LLM-on-Orange-Pi) Mali GPU support is up on Orange Pi.
-* [08/09/2023] [[Post]](https://blog.mlc.ai/2023/08/09/Making-AMD-GPUs-competitive-for-LLM-inference) ROCm backend is mature to use.
-* [08/02/2023] [Dockerfile](https://github.com/mlc-ai/llm-perf-bench/) is released for CUDA performance benchmarking.
-* [07/19/2023] Support for Llama2-7B/13B/70B is up.
-* [05/22/2023] [[Post]](https://blog.mlc.ai/2023/05/22/bringing-open-large-language-models-to-consumer-devices) RedPajama support is up.
-* [05/08/2023] [[Post]](https://blog.mlc.ai/2023/05/08/bringing-hardware-accelerated-language-models-to-android-devices) MLC LLM is now available on Android.
-* [05/01/2023] [[Post]](https://blog.mlc.ai/2023/05/01/bringing-accelerated-llm-to-consumer-hardware) MLC LLM is released with Metal, Vulkan and CUDA backends.
-* [04/14/2023] [WebLLM](https://github.com/mlc-ai/web-llm) is released prior to MLC LLM with WebGPU and WebAssembly backend.
-
-## Getting Started
-
-Please visit our [documentation](https://llm.mlc.ai/docs/index.html#getting-started) for detailed instructions.
-
-## Model Support
-
-MLC LLM supports a wide range of model architectures and variants. We have the following prebuilts which you can
-use off-the-shelf. Visit [Prebuilt Models](https://llm.mlc.ai/docs/prebuilt_models.html) to see the full list, and [Compile Models via MLC](https://llm.mlc.ai/docs/compilation/compile_models.html) to see how to use models not on this list.
-
-<table style="width:100%">
-  <thead>
-    <tr>
-      <th style="width:40%">Architecture</th>
-      <th style="width:60%">Prebuilt Model Variants</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Llama</td>
-      <td>Llama-2, Code Llama, Vicuna, WizardLM, WizardMath, OpenOrca Platypus2, FlagAlpha Llama-2 Chinese, georgesung Llama-2 Uncensored</td>
-    </tr>
-    <tr>
-      <td>GPT-NeoX</td>
-      <td>RedPajama</td>
-    </tr>
-    <tr>
-      <td>GPT-J</td>
-      <td></td>
-    </tr>
-    <tr>
-      <td>RWKV</td>
-      <td>RWKV-raven</td>
-    </tr>
-    <tr>
-      <td>MiniGPT</td>
-      <td></td>
-    </tr>
-    <tr>
-      <td>GPTBigCode</td>
-      <td>WizardCoder</td>
-    </tr>
-    <tr>
-      <td>ChatGLM</td>
-      <td></td>
-    </tr>
-    <tr>
-      <td>StableLM</td>
-      <td></td>
-    </tr>
-  </tbody>
-</table>
-
-## Universal Deployment APIs
-
-MLC LLM provides multiple sets of APIs across platforms and environments. These include
-* [Python API](https://llm.mlc.ai/docs/deploy/python.html)
-* [OpenAI-compatible Rest-API](https://llm.mlc.ai/docs/deploy/rest.html)
-* [C++ API](https://llm.mlc.ai/docs/deploy/cli.html)
-* [JavaScript API](https://llm.mlc.ai/docs/deploy/javascript.html) and [Web LLM](https://github.com/mlc-ai/web-llm)
-* [Swift API for iOS App](https://llm.mlc.ai/docs/deploy/ios.html)
-* [Java API and Android App](https://llm.mlc.ai/docs/deploy/android.html)
+Please visit our [documentation](https://llm.mlc.ai/docs/) to get started with MLC LLM.
+- [Installation](https://llm.mlc.ai/docs/install/mlc_llm)
+- [Quick start](https://llm.mlc.ai/docs/get_started/quick_start)
+- [Introduction](https://llm.mlc.ai/docs/get_started/introduction)
 
 ## Citation
 
@@ -157,7 +86,7 @@ The underlying techniques of MLC LLM include:
 
 <details>
   <summary>References (Click to expand)</summary>
-  
+
   ```bibtex
   @inproceedings{tensorir,
       author = {Feng, Siyuan and Hou, Bohan and Jin, Hongyi and Lin, Wuwei and Shao, Junru and Lai, Ruihang and Ye, Zihao and Zheng, Lianmin and Yu, Cody Hao and Yu, Yong and Chen, Tianqi},
@@ -203,10 +132,4 @@ The underlying techniques of MLC LLM include:
   ```
 </details>
 
-## Links
-
-- You might want to check out our online public [Machine Learning Compilation course](https://mlc.ai) for a systematic
-walkthrough of our approaches.
-- [WebLLM](https://webllm.mlc.ai/) is a companion project using MLC LLM's WebGPU and WebAssembly backend.
-- [WebStableDiffusion](https://websd.mlc.ai/) is a companion project for diffusion models with the WebGPU backend.
 

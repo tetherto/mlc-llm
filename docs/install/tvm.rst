@@ -37,49 +37,35 @@ A nightly prebuilt Python package of Apache TVM Unity is provided.
             .. code-block:: bash
 
               conda activate your-environment
-              python3 -m pip install --pre -U -f https://mlc.ai/wheels mlc-ai-nightly
-
-         .. tab:: CUDA 11.7
-
-            .. code-block:: bash
-
-              conda activate your-environment
-              python3 -m pip install --pre -U -f https://mlc.ai/wheels mlc-ai-nightly-cu117
-
-         .. tab:: CUDA 11.8
-
-            .. code-block:: bash
-
-              conda activate your-environment
-              python3 -m pip install --pre -U -f https://mlc.ai/wheels mlc-ai-nightly-cu118
+              python -m pip install --pre -U -f https://mlc.ai/wheels mlc-ai-nightly-cpu
 
          .. tab:: CUDA 12.1
 
             .. code-block:: bash
 
               conda activate your-environment
-              python3 -m pip install --pre -U -f https://mlc.ai/wheels mlc-ai-nightly-cu121
+              python -m pip install --pre -U -f https://mlc.ai/wheels mlc-ai-nightly-cu121
 
          .. tab:: CUDA 12.2
 
             .. code-block:: bash
 
               conda activate your-environment
-              python3 -m pip install --pre -U -f https://mlc.ai/wheels mlc-ai-nightly-cu122
+              python -m pip install --pre -U -f https://mlc.ai/wheels mlc-ai-nightly-cu122
 
-         .. tab:: ROCm 5.6
-
-            .. code-block:: bash
-
-              conda activate your-environment
-              python3 -m pip install --pre -U -f https://mlc.ai/wheels mlc-ai-nightly-rocm56
-
-         .. tab:: ROCm 5.7
+         .. tab:: ROCm 6.1
 
             .. code-block:: bash
 
               conda activate your-environment
-              python3 -m pip install --pre -U -f https://mlc.ai/wheels mlc-ai-nightly-rocm57
+              python -m pip install --pre -U -f https://mlc.ai/wheels mlc-ai-nightly-rocm61
+
+         .. tab:: ROCm 6.2
+
+            .. code-block:: bash
+
+              conda activate your-environment
+              python -m pip install --pre -U -f https://mlc.ai/wheels mlc-ai-nightly-rocm62
 
          .. tab:: Vulkan
 
@@ -102,7 +88,7 @@ A nightly prebuilt Python package of Apache TVM Unity is provided.
             .. code-block:: bash
 
               conda activate your-environment
-              python3 -m pip install --pre -U -f https://mlc.ai/wheels mlc-ai-nightly
+              python -m pip install --pre -U -f https://mlc.ai/wheels mlc-ai-nightly-cpu
 
         .. note::
 
@@ -123,9 +109,16 @@ A nightly prebuilt Python package of Apache TVM Unity is provided.
             .. code-block:: bash
 
               conda activate your-environment
-              python3 -m pip install --pre -U -f https://mlc.ai/wheels mlc-ai-nightly
+              python -m pip install --pre -U -f https://mlc.ai/wheels mlc-ai-nightly-cpu
 
       .. note::
+        Make sure you also install vulkan loader and clang to avoid vulkan
+        not found error or clang not found(needed for jit compile)
+
+        .. code-block:: bash
+
+            conda install -c conda-forge clang libvulkan-loader
+
         If encountering the error below:
 
         .. code-block:: bash
@@ -151,6 +144,7 @@ While it is generally recommended to always use the prebuilt TVM Unity, if you r
 
     - CMake >= 3.24
     - LLVM >= 15
+      - For please install LLVM>=17 for ROCm 6.1 and LLVM>=18 for ROCm 6.2.
     - Git
     - (Optional) CUDA >= 11.8 (targeting NVIDIA GPUs)
     - (Optional) Metal (targeting Apple GPUs such as M1 and M2)
@@ -174,7 +168,8 @@ While it is generally recommended to always use the prebuilt TVM Unity, if you r
         conda create -n tvm-build-venv -c conda-forge \
             "llvmdev>=15" \
             "cmake>=3.24" \
-            git
+            git \
+            python=3.11
         # enter the build environment
         conda activate tvm-build-venv
 
@@ -184,7 +179,7 @@ While it is generally recommended to always use the prebuilt TVM Unity, if you r
         :caption: Download TVM Unity from GitHub
 
         # clone from GitHub
-        git clone --recursive git@github.com:mlc-ai/relax.git tvm-unity && cd tvm-unity
+        git clone --recursive https://github.com/mlc-ai/relax.git tvm-unity && cd tvm-unity
         # create the build directory
         rm -rf build && mkdir build && cd build
         # specify build requirements in `config.cmake`
@@ -208,6 +203,10 @@ While it is generally recommended to always use the prebuilt TVM Unity, if you r
         echo "set(USE_METAL  OFF)" >> config.cmake
         echo "set(USE_VULKAN OFF)" >> config.cmake
         echo "set(USE_OPENCL OFF)" >> config.cmake
+        # FlashInfer related, requires CUDA w/ compute capability 80;86;89;90
+        echo "set(USE_FLASHINFER OFF)" >> config.cmake
+        echo "set(FLASHINFER_CUDA_ARCHITECTURES YOUR_CUDA_COMPUTE_CAPABILITY_HERE)" >> config.cmake
+        echo "set(CMAKE_CUDA_ARCHITECTURES YOUR_CUDA_COMPUTE_CAPABILITY_HERE)" >> config.cmake
 
     .. note::
         ``HIDE_PRIVATE_SYMBOLS`` is a configuration option that enables the ``-fvisibility=hidden`` flag. This flag helps prevent potential symbol conflicts between TVM and PyTorch. These conflicts arise due to the frameworks shipping LLVMs of different versions.
@@ -217,6 +216,13 @@ While it is generally recommended to always use the prebuilt TVM Unity, if you r
         - ``Debug`` sets ``-O0 -g``
         - ``RelWithDebInfo`` sets ``-O2 -g -DNDEBUG`` (recommended)
         - ``Release`` sets ``-O3 -DNDEBUG``
+
+    .. note::
+        If you are using CUDA and your compute capability is above 80, then it is require to build with
+        ``set(USE_FLASHINFER ON)``. Otherwise, you may run into ``Cannot find PackedFunc`` issue during
+        runtime.
+
+        To check your CUDA compute capability, you can use ``nvidia-smi --query-gpu=compute_cap --format=csv``.
 
     Once ``config.cmake`` is edited accordingly, kick off build with the commands below:
 
