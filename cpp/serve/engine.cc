@@ -382,7 +382,7 @@ class EngineImpl : public Engine {
     // - Initialize tokenizer and grammar
     n->tokenizer_ = Tokenizer::FromPath(engine_config->model, GetTokenizerInfo(model_configs[0]));
     n->token_table_ = n->tokenizer_->PostProcessedTokenTable();
-    n->grammar_init_context_cache_ = GrammarInitContextCache(n->token_table_);
+    //n->grammar_init_context_cache_ = GrammarInitContextCache(n->token_table_);
     // - Create the logit processor and sampler, and
     // the DraftTokenWorkspaceManager for speculative decoding.
     int max_num_tokens = engine_config->max_num_sequence;
@@ -480,7 +480,7 @@ class EngineImpl : public Engine {
     auto add_time_point = std::chrono::high_resolution_clock::now();
 
     // Get a request copy where all text inputs are tokenized.
-    request = Request::FromUntokenized(request, tokenizer_);
+    request = Request::FromUntokenized(request , tokenizer_);
     ICHECK_NE(request->prompt_tokens, -1);
 
     if (request->prompt_tokens >= engine_config_->max_single_sequence_length &&

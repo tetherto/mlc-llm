@@ -72,7 +72,7 @@ class TextDataNode : public DataNode {
   TVM_DECLARE_BASE_OBJECT_INFO(TextDataNode, DataNode);
 };
 
-class TextData : public Data {
+class __declspec(dllexport) TextData : public Data {
  public:
   explicit TextData(String text);
 

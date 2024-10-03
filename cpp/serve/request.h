@@ -62,7 +62,7 @@ class RequestNode : public Object {
   TVM_DECLARE_BASE_OBJECT_INFO(RequestNode, Object);
 };
 
-class Request : public ObjectRef {
+class __declspec(dllexport)  Request : public ObjectRef {
  public:
   explicit Request(String id, Array<Data> inputs, GenerationConfig generation_cfg);
 

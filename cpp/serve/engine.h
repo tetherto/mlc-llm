@@ -68,7 +68,8 @@ class Engine {
    * \param trace_recorder Event trace recorder for requests.
    * \return The created Engine in pointer, and the default generation config.
    */
-  static Result<EngineCreationOutput> Create(const std::string& engine_config_json_str,
+  __declspec(dllexport) static Result<EngineCreationOutput> Create(
+      const std::string& engine_config_json_str,
                                              Device device,
                                              FRequestStreamCallback request_stream_callback,
                                              Optional<EventTraceRecorder> trace_recorder);

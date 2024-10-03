@@ -21,7 +21,7 @@ namespace llm {
  * \tparam E The error type of the result.
  */
 template <typename T, typename E = std::string>
-class Result {
+class __declspec(dllexport)  Result {
  public:
   /*! \brief Create a result with an okay value. */
   static Result Ok(T value) {

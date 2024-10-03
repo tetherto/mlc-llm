@@ -121,7 +121,7 @@ class RequestModelStateNode : public Object {
   TVM_DECLARE_BASE_OBJECT_INFO(RequestModelStateNode, Object);
 };
 
-class RequestModelState : public ObjectRef {
+class __declspec(dllexport) RequestModelState : public ObjectRef {
  public:
   explicit RequestModelState(
       Request request, int model_id, int64_t internal_id, Array<Data> inputs,

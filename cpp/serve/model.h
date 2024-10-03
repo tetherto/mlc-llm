@@ -377,7 +377,8 @@ class Model : public ObjectRef {
    * \param trace_enabled A boolean indicating whether tracing is enabled.
    * \return The created runtime module.
    */
-  static Model Create(String reload_lib_path, String model_path,
+  __declspec(dllexport)  static Model
+      Create(String reload_lib_path, String model_path,
                       const picojson::object& model_config, DLDevice device,
                       const Optional<Session>& session, int num_shards, int num_stages,
                       bool trace_enabled);
@@ -387,7 +388,7 @@ class Model : public ObjectRef {
    * \param model_path The path to the model weight parameters.
    * \return The model config json object.
    */
-  static Result<picojson::object> LoadModelConfig(const String& model_path);
+  static __declspec(dllexport)  Result<picojson::object> LoadModelConfig(const String& model_path);
 
   TVM_DEFINE_MUTABLE_OBJECT_REF_METHODS(Model, ObjectRef, ModelObj);
 };

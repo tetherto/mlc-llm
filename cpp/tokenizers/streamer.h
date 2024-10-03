@@ -36,10 +36,10 @@ class TextStreamerObj : public Object {
    * \param delta_tokens The new tokens to put into the streamer.
    * \return The decoded delta string after putting the input new tokens.
    */
-  std::string Put(const std::vector<int32_t>& delta_tokens);
+  __declspec(dllexport)  std::string Put(const std::vector<int32_t>& delta_tokens);
 
   /*! \brief Return the string decoded by remaining tokens. */
-  std::string Finish();
+  __declspec(dllexport)  std::string Finish();
 
   // REPLACEMENT CHARACTER (U+FFFD) in UTF-8.
   static constexpr const char* kReplacementCharacter = "\xef\xbf\xbd";
@@ -63,7 +63,7 @@ class TextStreamerObj : public Object {
 class TextStreamer : public ObjectRef {
  public:
   /*! \brief Construct a text streamer with tokenizer. */
-  explicit TextStreamer(Tokenizer tokenizer);
+  __declspec(dllexport)  explicit TextStreamer(Tokenizer tokenizer);
 
   TVM_DEFINE_MUTABLE_OBJECT_REF_METHODS(TextStreamer, ObjectRef, TextStreamerObj);
 };

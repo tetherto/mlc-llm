@@ -357,3 +357,17 @@ class SyncMLCEngine:
     def metrics(self) -> EngineMetrics:
         """Reset the engine, clean up all running data and metrics."""
         return EngineMetrics(json.loads(self._ffi["json_metrics"]()))
+
+
+if __name__ == "__main__":
+
+    engine = SyncMLCEngine(model = r"C:\Users\sirki\teher_workspace\converted_tiny_llama",
+                           device = "vulkan:0",
+                           model_lib = r"C:\Users\sirki\teher_workspace\tiny_llama_vulkan_win.so"
+                           )
+    generation_config = GenerationConfig(
+        temperature=0.0, top_p=0, max_tokens=1024, stop_token_ids=[2], n=1
+    )
+    res = engine.generate(["what is meaning of life?", ], generation_config)
+    print(res)
+    print("done!")
