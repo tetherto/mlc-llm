@@ -81,8 +81,8 @@ class DebugConfig {
 class GenerationConfigNode : public Object {
  public:
   int n = 1;
-  double temperature = 1.0;
-  double top_p = 1.0;
+  double temperature = 0.7;
+  double top_p = 0.95;
   double frequency_penalty = 0.0;
   double presence_penalty = 0.0;
   double repetition_penalty = 1.0;
