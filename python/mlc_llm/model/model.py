@@ -37,6 +37,7 @@ from .rwkv5 import rwkv5_loader, rwkv5_model, rwkv5_quantization
 from .rwkv6 import rwkv6_loader, rwkv6_model, rwkv6_quantization
 from .stable_lm import stablelm_loader, stablelm_model, stablelm_quantization
 from .starcoder2 import starcoder2_loader, starcoder2_model, starcoder2_quantization
+from .marian import marian_loader, marian_model, marian_quantization
 
 ModelConfig = Any
 """A ModelConfig is an object that represents a model architecture. It is required to have
@@ -96,6 +97,21 @@ MODELS: Dict[str, Model] = {
             "ft-quant": llama_quantization.ft_quant,
             "awq": llama_quantization.awq_quant,
             "per-tensor-quant": llama_quantization.per_tensor_quant,
+        },
+    ),
+     "marian": Model(
+        name="marian",
+        model=marian_model.MarianMT,
+        config=marian_model.MarianConfig,
+        source={
+            "huggingface-torch": marian_loader.huggingface,
+            "huggingface-safetensor": marian_loader.huggingface,
+            "awq": marian_loader.awq,
+        },
+        quantize={
+            "no-quant": marian_quantization.no_quant,
+            "group-quant": marian_quantization.group_quant,
+            "awq": marian_quantization.awq_quant,
         },
     ),
     "mistral": Model(

@@ -82,7 +82,8 @@ if __name__ == "__main__":
                 break
             else:
                 print(f"Invalid input: {user_input}. FlashInfer requires 80, 86, 89, or 90.")
-
+    
+    cmake_config_str += f"set(MLC_LLM_STATIC OFF)\n"
     print("\nWriting the following configuration to config.cmake...")
     print(cmake_config_str)
 
