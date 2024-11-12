@@ -128,6 +128,15 @@ class Tokenizer : public ObjectRef {
    */
   MLC_LLM_DLL static Tokenizer FromPath(const String& path,
                                         std::optional<TokenizerInfo> info = std::nullopt);
+/*!
+ * \brief Create a tokenizer from a JSON string representation and its configuration
+ * \param tokenizer_string The JSON string containing the tokenizer data
+ * \param tokenizer_info The JSON string containing tokenizer configuration info
+ * \return A Tokenizer object constructed from the JSON strings
+ */
+  MLC_LLM_DLL static Tokenizer FromString(const String& tokenizer_string,
+                                        const String& tokenizer_info);
+
 
   /*! \brief Detect the tokenizer info from the given path of the tokenizer. */
   MLC_LLM_DLL static TokenizerInfo DetectTokenizerInfo(const String& path);
