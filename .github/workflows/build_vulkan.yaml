@@ -49,6 +49,16 @@ jobs:
         run: |
             git submodule update --init --recursive
 
+      - name: install tvm
+        run: |
+            cd ../tvm/python
+            pip install -e .
+
+      - name: verify tvm installation
+        run: |
+            echo "Verifying tvm instalation "
+            python -c "import tvm; print(tvm.__file__)"
+
 
       - name: Run a command in the container
         run: |
