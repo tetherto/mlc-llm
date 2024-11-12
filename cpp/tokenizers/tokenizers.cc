@@ -351,6 +351,16 @@ inline std::string ByteFallbackDecoder(const std::string& token) {
   return token;
 }
 
+
+Tokenizer Tokenizer::FromString(const String& tokenizer_string,
+                                        const String& tokenizer_info)
+  {
+    TokenizerInfo info_value = TokenizerInfo::FromJSONString(tokenizer_info);
+
+    return Tokenizer(tokenizers::Tokenizer::FromBlobJSON(tokenizer_string), info_value);
+
+  }
+
 /*! \brief SpaceReplacer decoder: transform "\u2581" back to space */
 inline std::string SpaceReplacerDecoder(const std::string& token) {
   // \u2581 is the unicode for "lower one eighth block"
