@@ -28,7 +28,7 @@ HuggingFace's implementation of MarianMT:https://github.com/huggingface/transfor
 
 @dataclasses.dataclass
 class MarianConfig(ConfigBase):
-    vocab_size: int 
+    vocab_size: int
     encoder_layers: int
     encoder_attention_heads: int
     decoder_layers: int
